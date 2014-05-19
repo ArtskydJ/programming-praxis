@@ -1,7 +1,12 @@
-﻿/*
-1) Given a number n, find the smallest 3-digit number such that the product of
-its digits is equal to n. For example, given n = 100, the solution is 455.
-*/
+﻿//Joseph Dykstra
+//2014-04-11
+
+//Two Interview Questions
+//http://programmingpraxis.com/2014/02/18/two-interview-questions/
+
+// 1) Given a number n, find the smallest 3-digit number such that the product
+// of its digits is equal to n. For example, given n = 100, the solution is 455.
+
 function smallestThreeDigit(t) {
 	var result
 	for (var i=9; i>=0; i--) {
@@ -17,11 +22,11 @@ function smallestThreeDigit(t) {
 
 console.log(smallestThreeDigit(648))
 
-/*
-2) Given two arrays, one with n items and one with n+2 items including the same
-items as the array with n items plus two additional items, find the two
-additional items. Assume none of the items are duplicates.
-*/
+
+// 2) Given two arrays, one with n items and one with n+2 items including the
+// same items as the array with n items plus two additional items, find the two
+// additional items. Assume none of the items are duplicates.
+
 function twoArrays(arr1, arr2) {
 	var largeArr = []
 	var smallArr = []

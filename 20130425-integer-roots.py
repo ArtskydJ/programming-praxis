@@ -1,9 +1,14 @@
-# Joseph Dykstra
-# 2013-04-25
+#Joseph Dykstra
+#2013-04-25
 
-# Integer Roots
-# http://programmingpraxis.com/2013/04/19/integer-roots/
+#Integer Roots
+#http://programmingpraxis.com/2013/04/19/integer-roots/
 
+# The integer root function, iroot(k, n) returns the largest integer x such that
+# x^k does not exceed n, assuming k and n are both positive integers. For
+# example, iroot(3, 125) equals 5, because 5^3 equals 125; likewise,
+# iroot(3, 126) equals 5, but iroot(3, 124) is 4, because 5^3 is greater than
+# 124.
 
 def iroot(root,num):
     stay=1

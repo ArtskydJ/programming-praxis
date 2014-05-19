@@ -1,11 +1,26 @@
 ﻿//Joseph Dykstra
-// http://programmingpraxis.com/2014/05/13/three-interview-questions-2/
+//2014-03-13
 
-// #3: Write a program to output the number of consecutive trailing zeros in the factorial of a number. For example, if the number is 5, then 5! = 120, and there is one trailing zero.
+//Three Interview Questions
+//http://programmingpraxis.com/2014/05/13/three-interview-questions-2/
+
+// 1) Consider a sorted singly-linked list having the following nodes:
+// 10 -> 30 -> 50 -> 70 -> NULL. You are given a pointer to node 50 and a new
+// node having the value 40. Can you insert node 40 correctly in the list
+// maintaining the ascending order?
 
 
 
+// 2) Given a linked list 5 -> 4 -> 3 -> 2 -> 1 produce a linked list
+// 4 -> 2 -> 0 -> 2 -> 1 by subtracting the last node of the list from the
+// first, the next-to-last node from the second, and so on, stopping at the
+// midpoint of the list.
 
+
+
+// 3) Write a program to output the number of consecutive trailing zeros in the
+// factorial of a number. For example, if the number is 5, then 5! = 120, and
+// there is one trailing zero.
 
 var factorialTrailingZeros = function(n) {
 
@@ -33,6 +48,8 @@ console.log(factorialTrailingZeros(10)) // => 2
 console.log(factorialTrailingZeros(20)) // => 4
 
 /*
+//Tests...
+	
 console.log(factorial(5))	//120
 console.log(factorial(6))	//720
 console.log(factorial(7))	//5040
