@@ -50,46 +50,134 @@
 //	\ddd character with octal value ddd, where ddd is 1 to 3 digits between 0 and 7 inclusive
 //	\c any other character c literally, for instance \\ for backslash or \" for quotation mark
 
-//module.exports = function printf() {
-function printf() {
-	var result = ""
-	var args = Array.prototype.slice.call(arguments)
-	if (args.length>0) {
-		if (args.length===1) {
-			result = args[0]
-		} else {
-			var string = args[0]
-			args = args.slice(1)
-			
-			var prevWasSpecial = false
-			var wasSpecial = false
-			var filtered = string.split("").filter(function (val) {
-				prevPrevSpecial = wasSpecial
-				var keep = true
-				if (wasSpecial) {
-					if (wasSpecial==="\\")					wasSpecial = false
-					else if (wasSpecial==="%") {
-						if (/(c|d|f|o|s|x|%)/.test(val))	wasSpecial = false
-						else if (/(-|[0-9]|\.)/.test(val))	wasSpecial = true
-					}
-				} else {
-					keep = /(%|\\)/.test(val)
-					if (keep)   wasSpecial = val
-					else        wasSpecial = ""
-				}
-				return keep
-			}).join("")
-			
-			console.log("filtered:", filtered)
-			console.log("string: ", string)
-			console.log("args: ", args)
-		}
+function pad(str, opts) {
+	if ( (opts.precision||0) > 0)
+		str = parseFloat(str).toPrecision(opts.precision).toString()
+	if ( (opts.width||0) > 0) {
+		var tStr = ''
+		for(var i=0; i < opts.width-str.length; i++)
+			tStr += (opts.zeroPad)? '0' : ' '
+		if (opts.zeroPad || opts.leftPad)	str = tStr + str
+		else								str = str + tStr
 	}
-	console.log(result)
+	return str
 }
 
+function filterOut(ele) {
+	return (typeof ele !== 'undefined' && ele !== '')
+}
+
+function printf() {
+	var result = ''
+	var args = Array.prototype.slice.call(arguments)
+	var re = /([^%\\]*)(%-?0?(?:[0-9]|\.)*[cdfosx%]|\\(?:[0-7]{1,3}|.))([^%\\]*)?/g //Find '%'s and '\'s
+	var reModifiers = /(-?)(0?)([0-9]?)(?:\.([0-9])?)/ //Get modifiers from between '%' and end char
+
+	if (args.length<1)
+		throw Error("No arguments for printf()")
+
+	var string = args.shift()
+	var stringArr = []
+	for(var temp = []; temp; temp = re.exec(string))
+		stringArr = stringArr.concat(temp.slice(1)).filter(filterOut)
+	if (stringArr.length === 0)
+		stringArr = [string]
+
+	var argIndex = 0
+	result = stringArr.map( function(ele) {
+		var prefix = ele.slice(0,1)
+		var modifiers = ele.slice(1, -1)
+		var suffix = ele.slice(-1)
+		var result = ''
+		if (prefix === '%') {
+			if (suffix === '%'){
+				result = '%'
+			} else {
+				if (argIndex>args.length)
+					throw Error("# of arguments < # of '%'s in printf()")
+
+				switch(suffix) {
+					case 'c': result = String.fromCharCode(parseInt(args[argIndex], 10)); break// c ascii character
+					case 'd': result = parseInt(args[argIndex], 10).toString(); break // d decimal integer
+					case 'f': result = parseFloat(args[argIndex]).toString(); break // f floating-point number
+					case 'o': result = parseInt(args[argIndex], 8).toString(); break // o octal integer
+					case 's': result = args[argIndex].toString(); break // s string
+					case 'x': result = parseInt(args[argIndex], 16).toString(); break // x hexadecimal integer
+				}
+				
+				if (modifiers) {
+					var temp = (reModifiers.exec(modifiers)||[]).slice(1)
+					result = pad(result, {
+						leftPad:   (temp[0])? true : false,
+						zeroPad:   (temp[1])? true : false,
+						width:     parseInt(temp[2]),
+						precision: parseInt(temp[3])
+					})
+				}
+				argIndex++
+			}
+		} else if (prefix === '\\') {
+			if (modifiers) { //Octal
+				result = String.toCharCode(parseInt(modifiers+suffix))
+			} else {
+				switch(suffix) {
+					case 'b': result = '\b'; break //backspace
+					case 'f': result = '\f'; break //formfeed
+					case 'n': result = '\n'; break //newline
+					case 'r': result = '\r'; break //carriage return
+					case 't': result = '\t'; break //tab
+					default:  result = suffix; break
+				}
+			}
+		} else {
+			result = ele
+		}
+		return result
+	}).join('')
+	console.log("'"+result+"'")
+}
+
+console.log(pad('3.1415926535', {
+	width: 1,
+	precision: 4,
+	leftPad: false,
+	zeroPad: false
+}))
+
+console.log(pad('123.1415926535', {
+	width: 1,
+	precision: 4,
+	leftPad: false,
+	zeroPad: false
+}))
+
+console.log(pad('3.1415926535', {
+	width: 4,
+	precision: 4,
+	leftPad: true,
+	zeroPad: true
+}))
+
+console.log(pad('3.1415926535', {
+	width: 8,
+	precision: 4,
+	leftPad: false,
+	zeroPad: true
+}))
+
+console.log(pad('3.1415926535', {
+	width: 8,
+	precision: 4,
+	leftPad: true,
+	zeroPad: false
+}))
+
+console.log('===============')
+
 printf("%d", 14)
-printf("%s", "hello")
+printf("j %s j", "hello")
 printf("%2.1f", 120.047)
+printf("%2.f", 120.047)
 printf("%d - %s", 95, "hello")
+printf("%2.1f %1.5f", 120.047, 3.1415926)
 printf("wuzzup")
