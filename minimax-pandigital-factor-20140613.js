@@ -63,38 +63,6 @@ chunk(i, 0, function() {
 	})
 })
 
-/*for(i[0]=0; i[0]<5; i[0]++) {
-	if (notSame(i, 0)) {
-
-		for(i[1]=0; i[1]<5; i[1]++) {
-			if (notSame(i, 1)) {
-
-				for(i[2]=0; i[2]<5; i[2]++) {
-					if (notSame(i, 2)) {
-
-						for(i[3]=0; i[3]<5; i[3]++) {
-							if (notSame(i, 3)) {
-
-								for(i[4]=0; i[4]<5; i[4]++) {
-									if (notSame(i, 4)) {
-
-										//count++
-										//console.log(i.join(''))
-										smallest = Math.min(smallest, aMath.factors(parseInt(i.join(''))).pop())
-										//var z = aMath.factors(parseInt(i.join(''))).pop()
-										//if (z<smallest)
-										//	smallest = z
-
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-}*/
 console.log('smallest: %d, came from: %s', smallest, ownsSmallest)
 console.log('count:', count)
 console.log('elapsed:', elapsed.get())
