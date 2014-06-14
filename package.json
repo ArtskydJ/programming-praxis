@@ -1,0 +1,29 @@
+{
+  "name": "programming-praxis",
+  "version": "0.0.1",
+  "main": "./index.js",
+  "author": {
+    "name": "ArtskydJ",
+    "email": "josephdykstra@gmail.com"
+  },
+  "description": "ArtskydJ's solutions for various programming praxis problems",
+  "keywords": [
+    "programming praxis"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ArtskydJ/programming-praxis"
+  },
+  "devDependencies": {
+    "tap": "~0.4.8"
+  },
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "tap ./test/*.js"
+  },
+  "dependencies": {
+    "array-math": "~0.0.4"
+  }
+}
