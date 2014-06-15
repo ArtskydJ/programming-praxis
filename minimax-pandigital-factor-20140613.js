@@ -18,7 +18,8 @@
 //Many other number have much bigger biggest prime factors, like 576492813
 //which contains 3 13 19 and 13649.
 
-var HOW_MANY_DIGITS = 5  //5 -> nnnnn ... 10 -> nnnnnnnnnn
+var HOW_MANY_DIGITS = 9  //5 -> nnnnn ... 10 -> nnnnnnnnnn
+var START_DIGIT = 1
 var COUNT_DIGITS = 10     //5 -> 0, 1, 2, 3, 4 ... 10 -> 0, 1, 2, 3, 4, 5, 6, 7, 8, 9
 
 var aMath = require('array-math')
@@ -29,38 +30,68 @@ var ownsSmallest = 0
 var count = 0
 var i = []
 while(i.length<HOW_MANY_DIGITS)
-	i.push(0)
+	i.push(1)
 
 function notSame(array, index) {
-	array = array.slice(0, index+1) //+1?
+	array = array.slice(0, index+1)
 	var compare = array.pop()
 	return array.every(function(ele) { return ele!==compare })
 }
 
-function chunk(array, index, cb) {
-	for(i[index]=0; i[index]<COUNT_DIGITS; i[index]++) {
-		if (notSame(i, index)) {
-			cb()
+function chunk(ind, cb) {
+	for(i[ind]=START_DIGIT; i[ind]<COUNT_DIGITS; i[ind]++) {
+		if (notSame(i, ind)) {
+			if (ind<HOW_MANY_DIGITS-1)
+				chunk(ind+1, cb)
+			else
+				cb()
 		}
 	}
 }
 
-chunk(i, 0, function() {
-	chunk(i, 1, function() {
-		chunk(i, 2, function() {
-			chunk(i, 3, function() {
-				chunk(i, 4, function() {
-					//console.log(i.join(''))
-					var z = aMath.factors(parseInt(i.join(''))).pop()
-					if (z<smallest) {
-						smallest = z
-						ownsSmallest = i.join('')
-					}
-					count++
-				})
-			})
-		})
-	})
+function largestFactor(n) {
+	for (var i=Math.ceil(n/2); i>0; i--) {
+		if ((n%i)==0)
+			return i
+	}
+}
+function largestFactor2(n) {
+	for (var i=2; i<=n/2; i++) {
+		if ((n%i)==0)
+			return n/i
+	}
+	return 1
+}
+var elapsed2 = require('ns-elapsed')()
+console.log(largestFactor2(500)) //should be 250
+console.log(largestFactor2(505)) //should be 101
+console.log(largestFactor2(29)) //should be 1
+console.log(largestFactor2(123456789)) //should be 41152263
+console.log(largestFactor2(123456798)) //should be ?
+console.log(largestFactor2(123456879)) //should be ?
+console.log(largestFactor2(123456897)) //should be ?
+console.log(''+elapsed2.get()+'\n')
+var elapsed3 = require('ns-elapsed')()
+console.log(largestFactor(500)) //should be 250
+console.log(largestFactor(505)) //should be 101
+console.log(largestFactor(29)) //should be 1
+console.log(largestFactor(123456789)) //should be 41152263
+console.log(largestFactor(123456798)) //should be ?
+console.log(largestFactor(123456879)) //should be ?
+console.log(largestFactor(123456897)) //should be ?
+console.log(''+elapsed3.get()+'\n')
+if(0)
+chunk(0, function() {
+	//console.log(i.join(''))
+	var z = largestFactor(parseInt(i.join('')))
+	if (z<smallest) {
+		smallest = z
+		ownsSmallest = i.join('')
+	}
+	if ((count%100)==0) {
+		console.log('c:%s, s:%d, o:%s, %d%%, t:%d', i.join(''), smallest, ownsSmallest, (count/362.88).toPrecision(2), elapsed.get())
+	}
+	count++
 })
 
 console.log('smallest: %d, came from: %s', smallest, ownsSmallest)
