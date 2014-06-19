@@ -50,50 +50,27 @@ function chunk(ind, cb) {
 }
 
 function largestFactor(n) {
-	for (var i=Math.ceil(n/2); i>0; i--) {
-		if ((n%i)==0)
-			return i
-	}
-}
-function largestFactor2(n) {
 	for (var i=2; i<=n/2; i++) {
-		if ((n%i)==0)
+		if ((n%i)==0 && aMath.isPrime(n/i))
 			return n/i
 	}
 	return 1
 }
-var elapsed2 = require('ns-elapsed')()
-console.log(largestFactor2(500)) //should be 250
-console.log(largestFactor2(505)) //should be 101
-console.log(largestFactor2(29)) //should be 1
-console.log(largestFactor2(123456789)) //should be 41152263
-console.log(largestFactor2(123456798)) //should be ?
-console.log(largestFactor2(123456879)) //should be ?
-console.log(largestFactor2(123456897)) //should be ?
-console.log(''+elapsed2.get()+'\n')
-var elapsed3 = require('ns-elapsed')()
-console.log(largestFactor(500)) //should be 250
-console.log(largestFactor(505)) //should be 101
-console.log(largestFactor(29)) //should be 1
-console.log(largestFactor(123456789)) //should be 41152263
-console.log(largestFactor(123456798)) //should be ?
-console.log(largestFactor(123456879)) //should be ?
-console.log(largestFactor(123456897)) //should be ?
-console.log(''+elapsed3.get()+'\n')
-if(0)
+
 chunk(0, function() {
-	//console.log(i.join(''))
 	var z = largestFactor(parseInt(i.join('')))
 	if (z<smallest) {
 		smallest = z
 		ownsSmallest = i.join('')
 	}
-	if ((count%100)==0) {
-		console.log('c:%s, s:%d, o:%s, %d%%, t:%d', i.join(''), smallest, ownsSmallest, (count/362.88).toPrecision(2), elapsed.get())
+	if ((count%1000)==0) {
+		console.log('c:%s, s:%d, o:%s, %d%%, %d sec', i.join(''),
+			smallest, ownsSmallest, (count/3629).toPrecision(3), elapsed.get().toPrecision(5)
+		)
 	}
 	count++
 })
 
 console.log('smallest: %d, came from: %s', smallest, ownsSmallest)
 console.log('count:', count)
-console.log('elapsed:', elapsed.get())
+console.log('elapsed: %d seconds', elapsed.get())
