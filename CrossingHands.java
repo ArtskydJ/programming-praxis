@@ -7,7 +7,7 @@
 // Write a progam that determines how many times the hands cross in one
 // twelve-hour period, and compute a list of those times.
 
-public class CrossingHands20140225 {
+public class CrossingHands {
 	public static void main(String[] args) {
 		//float hrs, lastHrs, min, lastMin, sec, lastSec;
 		int hrs, lastHrs, min, lastMin, sec, lastSec;
