@@ -20,27 +20,21 @@ if (args.length===0) {
 	throw new Error('Invalid arguments. Arguments must be positive numbers.')
 }
 
+var startNumber = parseInt(args[0]) //remember starting number!
 //take the first element, split it into an array of characters, and use it:
-var startNumber = parseInt(args[0])
 args = args[0].split('').map(function (ele) { return parseInt(ele) })
 
-var argsRev = []
-args.forEach(function (e) { //non-mutating reverse
-	argsRev.unshift(e)
-})
 for(var i=Math.ceil(args.length/2); i<args.length; i++) {
-	args[i] = argsRev[i]
+	args[i] = args[args.length - i - 1] //set last half to reverse of front half
 }
 
-var endNumber = parseInt(args.join(''))
-if (endNumber<startNumber) { //if the new palindrome number is too small
-	var half = Math.ceil(args.length / 2)-1
-	args[half]++
-	if ((args.length % 2) === 0) { //if args length is even
-		args[half+1]++
+if (parseInt(args.join(''))<startNumber) { //if new number is smaller than end number:
+	var half = Math.ceil(args.length / 2)-1 //find halfway digit(s)
+	args[half]++ //add one to the middle number
+	if ((args.length % 2) === 0) { //if args length is even...
+		args[half+1]++ //...add one to the other middle number
 	}
-	endNumber = parseInt(args.join(''))
 }
 
 //SHOW OUTPUT
-console.log(endNumber)
+console.log(parseInt(args.join('')))
