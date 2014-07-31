@@ -12,42 +12,45 @@
 //PREREQUISITS
 var util = require('util')
 var deepEqual = require('deep-equal')
+var LOUD = 1 //0: silent, 1: quiet, 2: noise, 3: noisy, 4: racket
+
 
 //FUNCTIONS
-function findDouble(arr, addTo) {
+function findDouble(arr) {
 	var found = false
-	console.log("input:", arr)
+	var copies = []
+	if (LOUD>=3) console.log("in:", arr)
 	for (var ind=0; ind<arr.length-1; ind++) { //if valid mesh...
-		if (arr[ind]*10 + arr[ind+1] <= 26) {
+		if (arr[ind]*10 + arr[ind+1] <= 26 && arr[ind+1]<10 && arr[ind]>0) {
 			var newCopy = arr.slice()
 			newCopy[ind] = arr[ind]*10 + arr[ind+1] //...then mesh them
 			newCopy = newCopy.filter(function (el, indexCopy, ar) {return indexCopy != ind+1})
-			addTo.push(newCopy) //add copy to full sets arr
-			//console.log("add:", newCopy)
+			copies.push(newCopy) //add copy to full sets arr
+			if (LOUD>=3) console.log("queue:", newCopy)
 			found = true
 		}
 	}
-	return found
+	return {found:found, copies:copies}
 }
 
-//*
-function myself(bigArr) {
-	var newArr = []
+function myself(bigArrOrigin) {
+	var fd = {}
+	var bigArr = bigArrOrigin.slice()
 	bigArr.forEach( function (ele) {
-		if (findDouble(ele, newArr)) {
-			any = true
-			bigArr.push(newArr)
-			console.log("add:", newArr)
-			myself(newArr)
+		fd = findDouble(ele)
+		if (fd.found) {
+			bigArr.push(fd.copies)
+			if (LOUD>=3) console.log("push:", fd.copies)
+			bigArr.push(myself(fd.copies))
 		}
 	})
+	return bigArr
 }
-//*/
 
 function flatten (theGiantArr) {
 	var firstGiantArr = theGiantArr.slice() //copy
 	function notFlattened(arr) {
-		return arr.some(function (e) {return e.some(util.isArray) }) //bind?
+		return arr.some(function (e) {return e.some(util.isArray) })
 	}
 	while(notFlattened(firstGiantArr)) {            //fga  ele  e e   ele  ele ele fga
 		firstGiantArr.forEach(function (ele, ind) { // [    [   [][]   ],   [   ]   ]
@@ -68,32 +71,26 @@ function flatten (theGiantArr) {
 	return firstGiantArr
 }
 
-function removeDuplicateArrays(arrOfArrs) { //slow
+function removeDuplicateArrays(arrOfArrs) { //not the most efficient, but not too bad
 	return arrOfArrs.filter(function (ea, now) {
-		return !arrOfArrs.slice(0, now).some(function (er) {
-			return deepEqual(ea, er) //duplicate element?
+		return !arrOfArrs.slice(0, now).some(function (er) { //every, w/o !
+			return deepEqual(ea, er) //duplicate element? //w/ !
 		})
 	})
 }
 
-function removeDuplicateArrays_FAST(arrOfArrs) { //fast
-	var result = []
-	var lastEntry = []
-	arrOfArrs.forEach(function (arrayEle) {
-		if ( lastEntry != arrayEle && //not same as last entry
-			!result.some(function (resultEle) { //no duplicates
-				return deepEqual(arrayEle, resultEle) //duplicate?
-			})
-		) { //if different
-			result.push(arrayEle) //add to result
-		}
-		lastEntry = arrayEle
+function removeArraysWith0s(arrOfArrs) { //bigarr.filter(ele.every(not0))
+	return arrOfArrs.filter(function (ele) {
+		return ele.every(function (el) {
+			return el !== 0
+		})
 	})
-	return result
 }
-//3.133 slow
-//2.658 fast
-//0.475 diff
+
+function textMap(n) {
+	var m = Math.round(n-1)
+	return 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.slice('')[m<=25?(m>=0?m:0):25]
+}
 
 //GET ARGUMENT
 var args = Array.prototype.slice.call(process.argv, 2) //gets arguments from process.argv
@@ -105,14 +102,28 @@ args = args.filter(function (ele) { //Keeps the arguments that have only numbers
 args = args[0].split('').map(function (ele) { return parseInt(ele) }) //in the form of [1,2,3,4]
 
 //MAKE SETS
-var fullSets = [] //in the form of [ [1,2,3,4], [12,3,4], [1,23,4] ]
-console.log("found some:", findDouble(args, fullSets))
-myself(fullSets) //modifies itself
-fullSets = flatten(fullSets) //returns new
-var elapsed = require('ns-elapsed')()
-var newFullSets = removeDuplicateArrays(fullSets) //returns new
-console.log("time: ",elapsed.get())
-console.log(deepEqual(fullSets, newFullSets)?"equal":"changed")
+var sets = [args]
+	if (LOUD>=3) console.log("start:\n",sets)
+
+sets = myself(sets) //in the form of [ [1,2,3,4], [12,3,4], [1,23,4] ] //returns new
+	if (LOUD>=4) console.log("recursive find:\n",sets)
+
+var b4 = sets.slice()
+sets = flatten(sets) //returns new
+	if (LOUD>=4) console.log("flattened:\n",sets)
+	if (LOUD>=2) console.log((deepEqual(b4, sets)?"Uns":"S") + "uccessful Flatten")
+
+b4 = sets.slice() //copy
+sets = removeDuplicateArrays(sets) //returns new
+	if (LOUD>=3) console.log("duplicates removed:\n",sets)
+	if (LOUD>=2) console.log((deepEqual(b4, sets)?"Uns":"S") + "uccessful Duplicate Removal")
+
+b4 = sets.slice() //copy
+sets = removeArraysWith0s(sets) //returns new
+	if (LOUD>=3) console.log("arrays with '0's removed:\n",sets)
+	if (LOUD>=2) console.log((deepEqual(b4, sets)?"Uns":"S") + "uccessful '0's Removal")
+
 //SHOW OUTPUT
-require('fs').writeFileSync('giantArr.txt', util.inspect(newFullSets, {depth:null}))
-//console.log(util.inspect(fullSets, {depth:null}))
+sets.forEach(function (ele) {
+	if (LOUD>=1) console.log( ele.map(textMap).join('') )
+})
