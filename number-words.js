@@ -9,7 +9,7 @@
 // instance, the number 1234 can be represented by the words ABCD, AWD and LCD.
 // Write the program to generate words from numbers.
 
-//PREREQUISITS
+//PREREQUISITES
 var util = require('util')
 var deepEqual = require('deep-equal')
 var LOUD = 1 //0: silent, 1: quiet, 2: noise, 3: noisy, 4: racket
